@@ -1,6 +1,6 @@
-import * as anchor from '@project-serum/anchor';
+import * as anchor from '@coral-xyz/anchor';
 
-import { MintLayout, TOKEN_PROGRAM_ID, Token } from '@solana/spl-token';
+import { MINT_SIZE, TOKEN_PROGRAM_ID, createInitializeMintInstruction, createMintToInstruction } from '@solana/spl-token';
 import {
     SystemProgram,
     Transaction,
@@ -160,7 +160,7 @@ export const getCandyMachineState = async (
     candyMachineId: anchor.web3.PublicKey,
     connection: anchor.web3.Connection,
 ): Promise<CandyMachineAccount> => {
-    const provider = new anchor.Provider(connection, anchorWallet, {
+    const provider = new anchor.AnchorProvider(connection, anchorWallet, {
         preflightCommitment: 'processed',
     });
 
@@ -290,15 +290,14 @@ export const createAccountsForMint = async (
         anchor.web3.SystemProgram.createAccount({
             fromPubkey: payer,
             newAccountPubkey: mint.publicKey,
-            space: MintLayout.span,
+            space: MINT_SIZE,
             lamports:
                 await candyMachine.program.provider.connection.getMinimumBalanceForRentExemption(
-                    MintLayout.span,
+                    MINT_SIZE,
                 ),
             programId: TOKEN_PROGRAM_ID,
         }),
-        Token.createInitMintInstruction(
-            TOKEN_PROGRAM_ID,
+        createInitializeMintInstruction(
             mint.publicKey,
             0,
             payer,
@@ -310,12 +309,10 @@ export const createAccountsForMint = async (
             payer,
             mint.publicKey,
         ),
-        Token.createMintToInstruction(
-            TOKEN_PROGRAM_ID,
+        createMintToInstruction(
             mint.publicKey,
             userTokenAccountAddress,
             payer,
-            [],
             1,
         ),
     ];
@@ -374,15 +371,14 @@ export const mintOneToken = async (
                 anchor.web3.SystemProgram.createAccount({
                     fromPubkey: payer,
                     newAccountPubkey: mint.publicKey,
-                    space: MintLayout.span,
+                    space: MINT_SIZE,
                     lamports:
                         await candyMachine.program.provider.connection.getMinimumBalanceForRentExemption(
-                            MintLayout.span,
+                            MINT_SIZE,
                         ),
                     programId: TOKEN_PROGRAM_ID,
                 }),
-                Token.createInitMintInstruction(
-                    TOKEN_PROGRAM_ID,
+                createInitializeMintInstruction(
                     mint.publicKey,
                     0,
                     payer,
@@ -394,12 +390,10 @@ export const mintOneToken = async (
                     payer,
                     mint.publicKey,
                 ),
-                Token.createMintToInstruction(
-                    TOKEN_PROGRAM_ID,
+                createMintToInstruction(
                     mint.publicKey,
                     userTokenAccountAddress,
                     payer,
-                    [],
                     1,
                 ),
             ],

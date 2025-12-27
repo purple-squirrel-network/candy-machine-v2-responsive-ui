@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from "react";
 import styled from "styled-components";
 import confetti from "canvas-confetti";
-import * as anchor from "@project-serum/anchor";
+import * as anchor from "@coral-xyz/anchor";
 import {
     Commitment,
     Connection,
